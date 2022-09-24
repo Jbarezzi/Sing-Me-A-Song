@@ -13,8 +13,8 @@ function createRecommendation(minMax: object = { min: -4, max: 50 }) {
 }
 
 function createRecomendationList(
-  minMax: object = { min: -4, max: 50 },
-  length: number
+  length: number,
+  minMax: object = { min: -4, max: 50 }
 ) {
   const recommendations = [];
   for (let i = 0; i < length; i++) {
