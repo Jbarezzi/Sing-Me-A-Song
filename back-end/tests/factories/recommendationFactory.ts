@@ -1,7 +1,7 @@
 import { randNumber, randSuperheroName } from "@ngneat/falso";
 import { Recommendation } from "@prisma/client";
 
-function createRecommendation(minMax: object = { min: -4, max: 50 }) {
+function __createRecommendation(minMax: object = { min: -4, max: 50 }) {
   const recommendation: Recommendation = {
     id: randNumber(),
     name: randSuperheroName(),
@@ -12,17 +12,29 @@ function createRecommendation(minMax: object = { min: -4, max: 50 }) {
   return recommendation;
 }
 
-function createRecomendationList(
+function __createRecommendationList(
   length: number,
   minMax: object = { min: -4, max: 50 }
 ) {
-  const recommendations = [];
+  const recommendations: Recommendation[] = [];
   for (let i = 0; i < length; i++) {
-    const recommendation = createRecommendation(minMax);
+    const recommendation = __createRecommendation(minMax);
     recommendations.push(recommendation);
   }
 
   return recommendations;
 }
 
-export { createRecommendation, createRecomendationList };
+function __createOrderedRecommendationList(length: number) {
+  const recommendations: Recommendation[] = __createRecommendationList(length);
+  recommendations.sort(
+    (a: Recommendation, b: Recommendation) => b.score - a.score
+  );
+  return recommendations;
+}
+
+export {
+  __createRecommendation,
+  __createRecommendationList,
+  __createOrderedRecommendationList,
+};
