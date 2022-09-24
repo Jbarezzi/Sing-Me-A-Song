@@ -200,5 +200,17 @@ describe("recommendation service tests suite", () => {
     expect(promise).resolves.toEqual(recommendations);
     expect(promise).resolves.toHaveLength(amount);
   });
-  it("should return a empty list if there are no recommendations", async () => {});
+  it("should return a empty list if there are no recommendations", async () => {
+    const amount: number = randNumber({ min: 5, max: 20 });
+    const recommendations = [];
+
+    jest
+      .spyOn(recommendationRepository, "getAmountByScore")
+      .mockResolvedValue(recommendations);
+
+    const promise = recommendationService.getTop(amount);
+    expect(recommendationRepository.getAmountByScore).toBeCalledWith(amount);
+    expect(promise).resolves.toEqual([]);
+    expect(promise).resolves.toHaveLength(0);
+  });
 });
