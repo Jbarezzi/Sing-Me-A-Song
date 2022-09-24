@@ -1,12 +1,15 @@
 import { randNumber, randSuperheroName } from "@ngneat/falso";
-import { Recommendation } from "@prisma/client";
 import { recommendationRepository } from "../../src/repositories/recommendationRepository";
 import {
   CreateRecommendationData,
   recommendationService,
 } from "../../src/services/recommendationsService";
 import { conflictError, notFoundError } from "../../src/utils/errorUtils";
-import { createRecommendation } from "../factories/recommendationFactory";
+import {
+  __createRecommendationList,
+  __createRecommendation,
+  __createOrderedRecommendationList,
+} from "../factories/recommendationFactory";
 
 beforeEach(() => {
   jest.resetAllMocks();
@@ -52,7 +55,7 @@ describe("recommendation service tests suite", () => {
   });
 
   it("should increment score if id exists", async () => {
-    const recommendation = createRecommendation();
+    const recommendation = __createRecommendation();
     const id: number = recommendation.id;
 
     jest
@@ -68,7 +71,7 @@ describe("recommendation service tests suite", () => {
   });
 
   it("should not increment score if id doesn't existis", async () => {
-    const id: number = createRecommendation().id;
+    const id: number = __createRecommendation().id;
 
     jest.spyOn(recommendationRepository, "find").mockResolvedValueOnce(null);
     jest.spyOn(recommendationRepository, "updateScore");
@@ -80,7 +83,7 @@ describe("recommendation service tests suite", () => {
   });
 
   it("should decrement score if id exists", async () => {
-    const recommendation = createRecommendation();
+    const recommendation = __createRecommendation();
     const id: number = recommendation.id;
 
     jest
@@ -96,8 +99,8 @@ describe("recommendation service tests suite", () => {
   });
 
   it("should decrement score if id exists and remove if score less than -5", async () => {
-    const minMax = { min: -7, max: -6 };
-    const recommendation = createRecommendation(minMax);
+    const minMax: { min: number; max: number } = { min: -7, max: -6 };
+    const recommendation = __createRecommendation(minMax);
     const id: number = recommendation.id;
 
     jest
@@ -115,7 +118,7 @@ describe("recommendation service tests suite", () => {
   });
 
   it("should not decrement score if id doesn't existis", async () => {
-    const id: number = createRecommendation().id;
+    const id: number = __createRecommendation().id;
 
     jest.spyOn(recommendationRepository, "find").mockResolvedValueOnce(null);
     jest.spyOn(recommendationRepository, "updateScore");
@@ -127,8 +130,8 @@ describe("recommendation service tests suite", () => {
   });
 
   it("should return random recommendation less than 10", async () => {
-    const minMax = { min: -4, max: 9 };
-    const recommendation = createRecommendation(minMax);
+    const minMax: { min: number; max: number } = { min: -4, max: 9 };
+    const recommendation = __createRecommendation(minMax);
 
     jest.spyOn(Math, "random").mockReturnValue(0.8);
     jest
@@ -142,8 +145,8 @@ describe("recommendation service tests suite", () => {
   });
 
   it("should return random recommendation greater than 10", async () => {
-    const minMax = { min: 11 };
-    const recommendation = createRecommendation(minMax);
+    const minMax: { min: number; max?: number } = { min: 11 };
+    const recommendation = __createRecommendation(minMax);
 
     jest.spyOn(Math, "random").mockReturnValue(0.6);
     jest
@@ -165,7 +168,7 @@ describe("recommendation service tests suite", () => {
   });
 
   it("should return list of recommendations", async () => {
-    const recommendation = createRecommendation();
+    const recommendation = __createRecommendation();
 
     jest
       .spyOn(recommendationRepository, "findAll")
@@ -184,6 +187,18 @@ describe("recommendation service tests suite", () => {
     expect(recommendationRepository.findAll).toBeCalled();
   });
 
-  it("should return list of recommendations with length equal number", async () => {});
-  it.todo("should return a empty list if there are no recommendations");
+  it("should return list of recommendations with length equal number", async () => {
+    const amount: number = randNumber({ min: 5, max: 20 });
+    const recommendations = __createOrderedRecommendationList(amount);
+
+    jest
+      .spyOn(recommendationRepository, "getAmountByScore")
+      .mockResolvedValue(recommendations);
+
+    const promise = recommendationService.getTop(amount);
+    expect(recommendationRepository.getAmountByScore).toBeCalledWith(amount);
+    expect(promise).resolves.toEqual(recommendations);
+    expect(promise).resolves.toHaveLength(amount);
+  });
+  it("should return a empty list if there are no recommendations", async () => {});
 });
