@@ -1,5 +1,15 @@
 import { randNumber, randSuperheroName } from "@ngneat/falso";
 import { Recommendation } from "@prisma/client";
+import { CreateRecommendationData } from "../../src/services/recommendationsService";
+
+function __createRecommendationInsertData() {
+  const recommendation: CreateRecommendationData = {
+    name: randSuperheroName(),
+    youtubeLink: "https://www.youtube.com/watch?v=v8bZOBI--L4",
+  };
+
+  return recommendation;
+}
 
 function __createRecommendation(minMax: object = { min: -4, max: 50 }) {
   const recommendation: Recommendation = {
@@ -37,4 +47,5 @@ export {
   __createRecommendation,
   __createRecommendationList,
   __createOrderedRecommendationList,
+  __createRecommendationInsertData,
 };

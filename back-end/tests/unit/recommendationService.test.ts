@@ -9,6 +9,7 @@ import {
   __createRecommendationList,
   __createRecommendation,
   __createOrderedRecommendationList,
+  __createRecommendationInsertData,
 } from "../factories/recommendationFactory";
 
 beforeEach(() => {
@@ -18,10 +19,7 @@ beforeEach(() => {
 
 describe("recommendation service tests suite", () => {
   it("should create recommendation", async () => {
-    const recommendation: CreateRecommendationData = {
-      name: randSuperheroName(),
-      youtubeLink: "https://www.youtube.com/watch?v=v8bZOBI--L4",
-    };
+    const recommendation = __createRecommendationInsertData();
 
     jest
       .spyOn(recommendationRepository, "findByName")
@@ -35,10 +33,7 @@ describe("recommendation service tests suite", () => {
   });
 
   it("should not create duplicated recommendation", async () => {
-    const recommendation: CreateRecommendationData = {
-      name: randSuperheroName(),
-      youtubeLink: "https://www.youtube.com/watch?v=v8bZOBI--L4",
-    };
+    const recommendation = __createRecommendationInsertData();
 
     jest
       .spyOn(recommendationRepository, "findByName")
