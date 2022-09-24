@@ -1,10 +1,11 @@
-import { randSuperheroName } from "@ngneat/falso";
+import { randNumber, randSuperheroName } from "@ngneat/falso";
+import { Recommendation } from "@prisma/client";
 import { recommendationRepository } from "../../src/repositories/recommendationRepository";
 import {
   CreateRecommendationData,
   recommendationService,
 } from "../../src/services/recommendationsService";
-import { conflictError } from "../../src/utils/errorUtils";
+import { conflictError, notFoundError } from "../../src/utils/errorUtils";
 
 beforeEach(() => {
   jest.resetAllMocks();
@@ -49,22 +50,116 @@ describe("recommendation service tests suite", () => {
     expect(recommendationRepository.create).not.toBeCalled();
   });
 
-  it.todo("should update score if id exists", async () => {});
+  it("should increment score if id exists", async () => {
+    const id: number = randNumber();
+    const recommendation: Recommendation = {
+      id: 1,
+      name: randSuperheroName(),
+      youtubeLink: "https://www.youtube.com/watch?v=v8bZOBI--L4",
+      score: 9,
+    };
 
-  it.todo("should not update score if id doesn't existis");
+    jest
+      .spyOn(recommendationRepository, "find")
+      .mockResolvedValueOnce(recommendation);
+    jest
+      .spyOn(recommendationRepository, "updateScore")
+      .mockResolvedValueOnce(recommendation);
 
-  it.todo("should update score if id exists");
-  it.todo("should not update score if id doesn't existis");
+    await recommendationService.upvote(id);
+    expect(recommendationRepository.find).toBeCalled();
+    expect(recommendationRepository.updateScore).toBeCalled();
+  });
 
-  it.todo("should return random recommendation");
-  it.todo("should not return reccommendation if there are none");
+  it("should not increment score if id doesn't existis", async () => {
+    const id: number = randNumber();
 
-  it.todo("should return list of recommendations");
-  it.todo("should return a empty list if there are no recommendations");
+    jest.spyOn(recommendationRepository, "find").mockResolvedValueOnce(null);
+    jest.spyOn(recommendationRepository, "updateScore");
 
-  it.todo("should return recommendation given a existing id");
-  it.todo("should throw not found if id doesn't exist");
+    const promise = recommendationService.upvote(id);
+    expect(promise).rejects.toEqual(notFoundError());
+    expect(recommendationRepository.find).toBeCalled();
+    expect(recommendationRepository.updateScore).not.toBeCalled();
+  });
 
-  it.todo("should return list of recommendations");
-  it.todo("should return a empty list if there are no recommendations");
+  it("should decrement score if id exists", async () => {
+    const id: number = randNumber();
+    const recommendation: Recommendation = {
+      id: 1,
+      name: randSuperheroName(),
+      youtubeLink: "https://www.youtube.com/watch?v=v8bZOBI--L4",
+      score: 9,
+    };
+
+    jest
+      .spyOn(recommendationRepository, "find")
+      .mockResolvedValueOnce(recommendation);
+    jest
+      .spyOn(recommendationRepository, "updateScore")
+      .mockResolvedValueOnce(recommendation);
+
+    await recommendationService.downvote(id);
+    expect(recommendationRepository.find).toBeCalled();
+    expect(recommendationRepository.updateScore).toBeCalled();
+  });
+
+  it("should decrement score if id exists and remove if score less than -5", async () => {
+    const id: number = randNumber();
+    const recommendation: Recommendation = {
+      id: 1,
+      name: randSuperheroName(),
+      youtubeLink: "https://www.youtube.com/watch?v=v8bZOBI--L4",
+      score: -6,
+    };
+
+    jest
+      .spyOn(recommendationRepository, "find")
+      .mockResolvedValueOnce(recommendation);
+    jest
+      .spyOn(recommendationRepository, "updateScore")
+      .mockResolvedValueOnce(recommendation);
+    jest.spyOn(recommendationRepository, "remove").mockResolvedValue();
+
+    await recommendationService.downvote(id);
+    expect(recommendationRepository.find).toBeCalled();
+    expect(recommendationRepository.updateScore).toBeCalled();
+    expect(recommendationRepository.remove).toBeCalled();
+  });
+
+  it("should not decrement score if id doesn't existis", async () => {
+    const id: number = randNumber();
+
+    jest.spyOn(recommendationRepository, "find").mockResolvedValueOnce(null);
+    jest.spyOn(recommendationRepository, "updateScore");
+
+    const promise = recommendationService.downvote(id);
+    expect(promise).rejects.toEqual(notFoundError());
+    expect(recommendationRepository.find).toBeCalled();
+    expect(recommendationRepository.updateScore).not.toBeCalled();
+  });
+
+  it("should return random recommendation less than 10", async () => {
+    jest.spyOn(Math, "random").mockImplementationOnce(() => 0.8);
+    jest.spyOn(recommendationRepository, "findAll");
+  });
+  it.todo(
+    "should not return reccommendation if there are none",
+    async () => {}
+  );
+
+  it.todo("should return list of recommendations", async () => {});
+  it.todo(
+    "should return a empty list if there are no recommendations",
+    async () => {}
+  );
+
+  it.todo("should return recommendation given a existing id", async () => {});
+  it.todo("should throw not found if id doesn't exist", async () => {});
+
+  it.todo("should return list of recommendations", async () => {});
+  it.todo(
+    "should return a empty list if there are no recommendations",
+    async () => {}
+  );
 });
