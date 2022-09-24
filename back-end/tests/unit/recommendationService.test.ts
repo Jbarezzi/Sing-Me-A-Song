@@ -12,12 +12,12 @@ import {
   __createRecommendationInsertData,
 } from "../factories/recommendationFactory";
 
-beforeEach(() => {
-  jest.resetAllMocks();
-  jest.clearAllMocks();
-});
-
 describe("recommendation service tests suite", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+    jest.clearAllMocks();
+  });
+
   it("should create recommendation", async () => {
     const recommendation = __createRecommendationInsertData();
 
