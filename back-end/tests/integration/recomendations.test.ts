@@ -1,6 +1,11 @@
 import supertest from "supertest";
 import app from "../../src/app";
-import { __createData, __resetDb } from "../factories/databaseFactory";
+import {
+  __createData,
+  __createDataToDelete,
+  __getId,
+  __resetDb,
+} from "../factories/databaseFactory";
 import { __createRecommendationInsertData } from "../factories/recommendationFactory";
 
 describe("integrations tests suite", () => {
@@ -74,12 +79,13 @@ describe("integrations tests suite", () => {
   describe("POST /recommendations/:id/upvote", () => {
     it("given a existing id return 200", async () => {
       await __createData();
-      const result = await supertest(app).get("/recommendations/1/upvote");
+      const id: number = await __getId();
+      const result = await supertest(app).post(`/recommendations/${id}/upvote`);
       expect(result.statusCode).toEqual(200);
     });
 
     it("given a non existing id should return 404", async () => {
-      const result = await supertest(app).get("/recommendations/1/upvote");
+      const result = await supertest(app).post("/recommendations/-1/upvote");
       expect(result.statusCode).toEqual(404);
     });
   });
@@ -87,12 +93,25 @@ describe("integrations tests suite", () => {
   describe("POST /recommendations/:id/downvote", () => {
     it("given a existing id return 200", async () => {
       await __createData();
-      const result = await supertest(app).get("/recommendations/1/downvote");
+      const id: number = await __getId();
+      const result = await supertest(app).post(
+        `/recommendations/${id}/downvote`
+      );
       expect(result.statusCode).toEqual(200);
     });
 
+    it("given a existing id with score -5 should delete recommendation and return 200", async () => {
+      await __createDataToDelete();
+      const result = await supertest(app).post(`/recommendations/1/downvote`);
+      const resultDelete = await supertest(app).post(
+        `/recommendations/1/downvote`
+      );
+      expect(result.statusCode).toEqual(200);
+      expect(resultDelete.statusCode).toEqual(404);
+    });
+
     it("given a non existing id should return 404", async () => {
-      const result = await supertest(app).get("/recommendations/1/downvote");
+      const result = await supertest(app).post(`/recommendations/-1/downvote`);
       expect(result.statusCode).toEqual(404);
     });
   });

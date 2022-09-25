@@ -16,4 +16,17 @@ async function __createData() {
   await prisma.recommendation.createMany({ data });
 }
 
-export { __resetDb, __createData };
+async function __getId() {
+  const recommendation = await prisma.recommendation.findFirst();
+  return recommendation.id;
+}
+
+async function __createDataToDelete() {
+  const data = {
+    ...__createRecommendationInsertData(),
+    score: -6,
+  };
+  await prisma.recommendation.create({ data });
+}
+
+export { __resetDb, __createData, __getId, __createDataToDelete };
