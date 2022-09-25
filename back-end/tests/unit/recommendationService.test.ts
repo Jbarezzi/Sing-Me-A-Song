@@ -1,9 +1,6 @@
-import { randNumber, randSuperheroName } from "@ngneat/falso";
+import { randNumber } from "@ngneat/falso";
 import { recommendationRepository } from "../../src/repositories/recommendationRepository";
-import {
-  CreateRecommendationData,
-  recommendationService,
-} from "../../src/services/recommendationsService";
+import { recommendationService } from "../../src/services/recommendationsService";
 import { conflictError, notFoundError } from "../../src/utils/errorUtils";
 import {
   __createRecommendationList,
