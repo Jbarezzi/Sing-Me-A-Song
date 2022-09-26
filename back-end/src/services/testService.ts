@@ -1,9 +1,9 @@
-import { testRepository } from "../repositories/testRepository";
+import { testRepository } from "../repositories/testRepository.js";
 
 function recommendations() {
   const data = [
     {
-      name: "+Que Amizade - Froid",
+      name: "Que Amizade - Froid",
       youtubeLink: "https://www.youtube.com/watch?v=tJBo8aIv0sU",
       score: 11,
     },
@@ -46,6 +46,11 @@ function recommendations() {
       name: "Sdds Sant - Furamil 2Cão",
       youtubeLink: "https://www.youtube.com/watch?v=euF9FpzIO1k",
       score: 45,
+    },
+    {
+      name: "Indústria do Medo - Froid",
+      youtubeLink: "https://www.youtube.com/watch?v=H39uQh5Po3k",
+      score: -5,
     },
   ];
 

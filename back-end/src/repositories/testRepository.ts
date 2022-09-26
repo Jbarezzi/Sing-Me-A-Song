@@ -1,4 +1,4 @@
-import { prisma } from "../database";
+import { prisma } from "../database.js";
 
 async function insert(data: any) {
   await prisma.recommendation.createMany({ data });
@@ -6,7 +6,7 @@ async function insert(data: any) {
 }
 
 async function deleteAll() {
-  await prisma.recommendation.deleteMany({});
+  await prisma.$executeRaw`TRUNCATE TABLE recommendations RESTART IDENTITY`;
   return;
 }
 

@@ -1,14 +1,14 @@
 import { Request, Response } from "express";
-import { testRepository } from "../repositories/testRepository";
-import { testService } from "../services/testService";
+import { testRepository } from "../repositories/testRepository.js";
+import { testService } from "../services/testService.js";
 
 async function seedDb(_req: Request, res: Response) {
   await testService.mockData();
-  return res.status(201);
+  return res.sendStatus(201);
 }
 async function resetDb(_req: Request, res: Response) {
   await testRepository.deleteAll();
-  return res.status(204);
+  return res.sendStatus(204);
 }
 
 export const testController = {
